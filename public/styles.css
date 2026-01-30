@@ -1,0 +1,466 @@
+@font-face {
+  font-family: "Pinyon Script";
+  src:
+    url("./fonts/PinyonScript-Regular.woff2") format("woff2"),
+    url("./fonts/PinyonScript-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Playwrite DE Grund";
+  src:
+    url("./fonts/PlaywriteDEGrund-Regular.woff2") format("woff2"),
+    url("./fonts/PlaywriteDEGrund-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --primary: #67211f;
+  --secondary: #3c1b0f;
+  --light: #f1ecdb;
+  --accent: #868859;
+  --font-main: "Playwrite DE Grund", sans-serif;
+  --font-title: "Pinyon Script", serif;
+}
+
+/* will be applied for all pages */
+body {
+  margin: 0;
+  background-color: var(--light);
+  font-family: var(--font-main);
+}
+
+.bg-dark-red {
+  background-color: var(--primary) !important;
+}
+
+.font-title {
+  font-family: var(--font-title);
+}
+
+.text-light {
+  color: var(--light) !important;
+}
+
+.btn {
+  background-color: var(--secondary);
+  color: var(--light);
+}
+
+.btn:hover {
+  background-color: var(--accent);
+}
+
+/*header*/
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: var(--primary);
+  color: var(--light);
+  padding: 20px 50px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+}
+
+.logo {
+  text-align: left;
+}
+
+.logo h1 {
+  font-family: var(--font-title);
+  font-size: 4rem;
+  margin: 0;
+}
+
+.logo p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--light);
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list a {
+  text-decoration: none;
+  color: var(--light);
+  font-family: var(--font-main);
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-list a:hover,
+.nav-list a.active {
+  color: var(--accent);
+}
+
+/* for home page */
+.hero {
+  color: var(--background);
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-text h1 span {
+  font-family: var(--font-title);
+  font-size: 4rem;
+  color: var(--secondary);
+}
+
+.background-img {
+  background-image: url("images/backgroundInterier.jfif");
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.4;
+  z-index: -1;
+}
+
+/* for about page */
+.about {
+  text-align: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.hours-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.hours-table th,
+.hours-table td {
+  border: 1px solid var(--accent);
+  padding: 8px;
+}
+
+tr:nth-child(1) {
+  background-color: var(--accent);
+}
+
+/* for menu page */
+.menu {
+  text-align: center;
+  min-height: 100vh;
+}
+
+.menu h2 {
+  font-size: 4rem;
+  font-family: var(--font-title);
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  justify-items: center;
+  padding: 10px;
+}
+
+.menu-card {
+  background: var(--light);
+  border: 1px solid var(--accent);
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 300px;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+}
+
+.menu-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+.menu-card h3 {
+  color: var(--primary);
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.menu-card p {
+  color: var(--secondary);
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.price {
+  display: inline-block;
+  font-weight: bold;
+  color: var(--accent);
+}
+
+/* for book page */
+.book {
+  min-height: 100vh;
+}
+
+.booking-form-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: var(--light);
+}
+
+.booking-form {
+  border: 1px solid var(--accent);
+  border-radius: 15px;
+  max-width: 500px;
+  width: 100%;
+  padding: 30px;
+}
+
+.booking-form h2 {
+  text-align: center;
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+}
+
+.booking-form label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+  color: var(--secondary);
+}
+
+.booking-form input,
+.booking-form select,
+.booking-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  font-family: var(--font-main);
+}
+
+.booking-form button {
+  width: 100%;
+  margin-top: 25px;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: var(--primary);
+  color: var(--light);
+  border: none;
+  border-radius: 10px;
+}
+
+.booking-form button:hover {
+  background-color: var(--accent);
+}
+
+/* for contact page */
+.contact-page {
+  text-align: center;
+  min-height: 100vh;
+  padding: clamp(20px, 5vw, 60px);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 30px;
+  padding: 20px;
+  align-items: start;
+}
+
+.contact-info,
+.contact-map,
+.contact-form {
+  border: 1px solid var(--accent);
+  border-radius: 15px;
+  background-color: var(--light);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: clamp(20px, 3vw, 40px);
+}
+
+.contact-info h3,
+.contact-form h3 {
+  color: var(--primary);
+  margin-bottom: 15px;
+}
+
+.contact-map img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+/*media for responsiveness*/
+@media (max-width: 992px) {
+  .header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .nav-list {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .contact-info,
+  .contact-form,
+  .contact-map {
+    padding: 10px;
+  }
+
+  .font-title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    padding: 10px;
+  }
+
+  .logo h1 {
+    font-size: 1.8rem;
+  }
+
+  .nav-list {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-info,
+  .contact-map,
+  .contact-form {
+    text-align: center;
+  }
+
+  .contact-map img {
+    width: 100%;
+    height: auto;
+  }
+
+  form {
+    width: 100%;
+  }
+
+  input,
+  textarea {
+    width: 90%;
+  }
+
+  .btn {
+    width: 90%;
+    padding: 10px;
+  }
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeInUp 1.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.auth-page {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-card {
+  background: rgba(241, 236, 219, 0.92); /* --light with transparency */
+  border: 1px solid var(--accent);
+  border-radius: 15px;
+  padding: 24px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(4px);
+}
+
+.auth-title {
+  margin: 0 0 6px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.auth-subtitle {
+  margin: 0 0 14px;
+  color: var(--secondary);
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: #fff;
+  font-family: var(--font-main);
+  color: var(--secondary);
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(134, 136, 89, 0.25); /* accent glow */
+}
+
+.auth-msg {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  min-height: 18px;
+}
