@@ -12,6 +12,7 @@ router.get("/profile", requireAuth, getProfile);
 async function register(req, res) {
   try {
     const { name, email, password } = req.body;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     //validation
     if (!name || !email || !password) {
@@ -19,6 +20,13 @@ async function register(req, res) {
         .status(400)
         .json({ message: "name, email, password are required" });
     }
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        message: "Invalid email format",
+      });
+    }
+
     if (typeof password !== "string" || password.length < 6) {
       return res
         .status(400)
