@@ -1,143 +1,105 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const User = require("../models/User");
-const requireAuth = require("../middleware/auth");
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+import User from "../models/User.js";
+import requireAuth from "../middleware/auth.js";
+
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
-router.post("/logout", logout);
-router.get("/profile", requireAuth, getProfile);
+const emailRegex =
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-async function register(req, res) {
+function signToken(userId) {
+  return jwt.sign(
+    { userId },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+}
+
+// REGISTER
+router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    //validation
     if (!name || !email || !password) {
-      return res
-        .status(400)
-        .json({ message: "name, email, password are required" });
+      return res.status(400).json({ message: "All fields required" });
     }
 
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        message: "Invalid email format",
-      });
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!emailRegex.test(normalizedEmail)) {
+      return res.status(400).json({ message: "Invalid email format" });
     }
 
-    if (typeof password !== "string" || password.length < 6) {
-      return res
-        .status(400)
-        .json({ message: "password must be at least 6 characters" });
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password too short" });
     }
 
-    const normalizedEmail = String(email).trim().toLowerCase();
-
-    //check in db if email is unique
-    const existing = await User.findOne({ email: normalizedEmail });
-    if (existing) {
+    const exists = await User.findOne({ email: normalizedEmail });
+    if (exists) {
       return res.status(409).json({ message: "User already exists" });
     }
 
-    //hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashed = await bcrypt.hash(password, salt);
+    const hash = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      name: String(name).trim(),
+      name: name.trim(),
       email: normalizedEmail,
-      password: hashed,
+      password: hash
     });
 
-    console.log("User registered:", user.email);
-
-    return res.status(201).json({
-      message: "User registered successfully",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        createdAt: user.createdAt,
-      },
+    res.status(201).json({
+      message: "Registered",
+      user: { id: user._id, email: user.email }
     });
   } catch (err) {
-    console.error("Register error:", err);
-
-    //mongoose duplicate key safety
-    if (err?.code === 11000) {
-      return res.status(409).json({ message: "Email already exists" });
-    }
-    return res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error" });
   }
-}
+});
 
-async function getProfile(req, res) {
-  try {
-    const userId = req.session.userId;
-    const user = await User.findById(userId).select("-password");
-    if (!user) {
-      return res.status(401).json({ message: "Unauthorized: user not found" });
-    }
-
-    console.log("User profile recieved");
-    return res.status(200).json({ user });
-  } catch (err) {
-    console.error("Profile error:", err);
-    return res.status(500).json({ message: "Server error" });
-  }
-}
-
-async function logout(req, res) {
-  //destroy session
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Logout error:", err);
-      return res.status(500).json({ message: "Failed to logout" });
-    }
-
-    //clear cookie
-    res.clearCookie("connect.sid");
-    console.log("Logout sucessfully");
-    return res.status(200).json({ message: "Logged out" });
-  });
-}
-
-async function login(req, res) {
+// LOGIN
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "email and password are required" });
+    const normalizedEmail = email?.trim().toLowerCase();
+    if (!email || !password || !emailRegex.test(normalizedEmail)) {
+      return res.status(400).json({ message: "Invalid credentials" });
     }
-
-    const normalizedEmail = String(email).trim().toLowerCase();
 
     const user = await User.findOne({ email: normalizedEmail });
-    if (!user) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const ok = await bcrypt.compare(password, user.password);
-    if (!ok) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
+    const token = signToken(user._id.toString());
 
-    //store userId in session
-    req.session.userId = user._id.toString();
-    console.log(`User ${email} logged in`, email);
-
-    return res.status(200).json({
-      message: "Login successful",
-      user: { id: user._id, name: user.name, email: user.email },
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 1000,
+      sameSite: "lax"
     });
-  } catch (err) {
-    console.error("Login error:", err);
-    return res.status(500).json({ message: "Server error" });
-  }
-}
 
-module.exports = router;
+    res.json({
+      message: "Logged in",
+      user: { id: user._id, email: user.email }
+    });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// LOGOUT
+router.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out" });
+});
+
+// PROFILE
+router.get("/profile", requireAuth, async (req, res) => {
+  const user = await User.findById(req.user.id).select("-password");
+  res.json({ user });
+});
+
+export default router;
