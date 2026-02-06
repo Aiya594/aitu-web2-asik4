@@ -14,10 +14,5 @@ export function errorHandler(err, req, res, next) {
     payload.details = err.details;
   }
 
-  // Helpful during development
-  if (process.env.NODE_ENV !== "production") {
-    payload.stack = err.stack;
-  }
-
   res.status(status).json(payload);
 }

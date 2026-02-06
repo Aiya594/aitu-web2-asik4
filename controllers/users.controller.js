@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+import bcryptjs from "bcryptjs";
 
 import User from "../models/User.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -22,7 +22,7 @@ export async function updateProfile(req, res) {
   }
 
   if (name) user.name = name;
-  if (password) user.password = await bcrypt.hash(password, 10);
+  if (password) user.password = await bcryptjs.hash(password, 10);
 
   await user.save();
   const safeUser = await User.findById(user._id).select("-password");
