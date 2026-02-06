@@ -5,7 +5,9 @@ import cookieParser from "cookie-parser";
 import { fileURLToPath } from "url";
 
 import connectDB from "./config/db.js";
-import routes from "./routes/routes.js";
+import apiRoutes from "./routes/index.js";
+import { notFound, errorHandler } from "./middleware/error.middleware.js";
+import ensureAdmin from "./config/ensureAdmin.js";
 
 dotenv.config();
 
@@ -19,10 +21,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/api/auth", routes);
+app.use("/api", apiRoutes);
+
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/health", (req, res) => res.json({ ok: true }));
+
+app.use(notFound);
+app.use(errorHandler);
 
 (async () => {
   try {
@@ -31,6 +37,7 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 
     await connectDB(process.env.MONGO_URI);
 
+    await ensureAdmin();
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
