@@ -1,7 +1,15 @@
 export default function requireAdmin(req, res, next) {
-  if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+  const role =
+    req.user?.role ||
+    req.user?.user?.role ||
+    req.authUser?.role ||
+    req.auth?.role;
 
-  if (req.user.role !== "admin") {
+  if (!role) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (role !== "admin") {
     return res.status(403).json({ message: "Forbidden: admin only" });
   }
 
