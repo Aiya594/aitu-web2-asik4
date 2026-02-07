@@ -1,5 +1,4 @@
 (() => {
-  //helpers
   async function api(path, method = "GET", body) {
     const res = await fetch(path, {
       method,
@@ -41,9 +40,8 @@
     if (!btn) return;
 
     try {
-      const data = await api("/api/auth/profile");
+      const data = await api("/api/users/profile");
 
-      //Logged in
       btn.textContent = "Logout";
       btn.setAttribute("href", "#");
 
@@ -57,7 +55,6 @@
 
       console.log("Logged in as:", data.user?.email);
     } catch (_) {
-      //Not logged in
       btn.textContent = "Login";
       btn.setAttribute("href", authPageHref());
       btn.onclick = null;
@@ -87,7 +84,6 @@
           await api("/api/auth/register", "POST", { name, email, password });
           setMsg("registerMsg", "Registered. Now login on the right.", true);
 
-          //move email to login form & focus password
           if ($("loginEmail")) $("loginEmail").value = email;
           if ($("regPassword")) $("regPassword").value = "";
           $("loginPassword")?.focus();
@@ -111,9 +107,8 @@
 
         try {
           await api("/api/auth/login", "POST", { email, password });
-          setMsg("loginMsg", "Logged in Redirecting...", true);
+          setMsg("loginMsg", "Logged in. Redirecting...", true);
 
-          //redirect to home
           setTimeout(() => {
             window.location.href = "../index.html";
           }, 400);
@@ -124,10 +119,8 @@
     }
   }
 
-  // boot
   document.addEventListener("DOMContentLoaded", async () => {
     initAuthForms();
-
     await initAuthButton();
   });
 })();
