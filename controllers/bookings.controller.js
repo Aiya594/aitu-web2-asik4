@@ -2,9 +2,15 @@ import Booking from "../models/Booking.js";
 import { ApiError } from "../utils/ApiError.js";
 
 export async function createBooking(req, res) {
+  const { fullName, people, dateTime, notes } = req.body;
+
   const booking = await Booking.create({
     user: req.user.id,
-    ...req.body,
+    fullName,
+    email: req.user.email,
+    people,
+    dateTime,
+    notes: notes || "",
   });
   res.status(201).json({ message: "Booking created", booking });
 }

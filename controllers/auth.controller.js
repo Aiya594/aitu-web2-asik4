@@ -4,8 +4,17 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { ApiError } from "../utils/ApiError.js";
 
-function signToken(userId) {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
+function signToken(user) {
+  return jwt.sign(
+    {
+      userId: user._id.toString(),
+      role: user.role,
+      email: user.email,
+      name: user.name,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN },
+  );
 }
 
 export async function register(req, res) {
@@ -32,7 +41,7 @@ export async function login(req, res) {
   const ok = await bcrypt.compare(password, user.password);
   if (!ok) throw new ApiError(401, "Invalid email or password");
 
-  const token = signToken(user._id.toString());
+  const token = signToken(user);
 
   // keep cookie-based auth for the existing frontend
   res.cookie("token", token, {
@@ -44,8 +53,26 @@ export async function login(req, res) {
 
   res.json({
     message: "Logged in",
-    token, // useful for Postman / mobile clients
-    user: { id: user._id, name: user.name, email: user.email },
+    token,
+    user: { id: user._id, name: user.name, email: user.email, role: user.role },
+  });
+}
+
+export async function getProfile(req, res) {
+  const user = await User.findById(req.user.id).select(
+    "name email role createdAt",
+  );
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  res.json({
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    createdAt: user.createdAt,
   });
 }
 
